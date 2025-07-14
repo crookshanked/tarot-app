@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tarot Card Reading</title>
+<style>
+  body { font-family: sans-serif; }
+  .card-container { display: flex; flex-wrap: wrap; }
+  .card { margin: 10px; text-align: center; }
+  .card img { width: 150px; }
+  .reversed { transform: rotate(180deg); }
+  textarea { width: 100%; height: 100px; }
+</style>
+</head>
+<body>
+
+<h1>Tarot Card Reading</h1>
+
+<div>
+  <label for="deck-type">Deck Type:</label>
+  <select id="deck-type">
+    <option value="rider-waite">Rider-Waite</option>
+  </select>
+</div>
+
+<div>
+  <label for="query">Query (optional):</label>
+  <input type="text" id="query">
+</div>
+
+<div>
+  <label for="layout">Layout:</label>
+  <select id="layout">
+    <option value="1">Single Card</option>
+    <option value="3">Three Card (Past, Present, Future)</option>
+  </select>
+</div>
+
+<button id="draw-cards">Draw Cards</button>
+
+  <div id="reading" style="display:none;">
+  <div id="cards" class="card-container"></div>
+  <h2>Interpretation</h2>
+  <textarea id="interpretation" readonly></textarea>
+  <a id="download" href="#">Download Reading</a>
+  <div id="share">
+    <button id="share-button">Share</button>
+    <div id="share-tooltip" style="display:none;">
+      <input type="text" id="share-url" readonly>
+      <br>
+      <a href="#" id="facebook-share" target="_blank">Facebook</a>
+      <a href="#" id="twitter-share" target="_blank">X</a>
+      <a href="#" id="bluesky-share" target="_blank">Bluesky</a>
+      <a href="#" id="instagram-share" target="_blank">Instagram</a>
+      <a href="#" id="reddit-share" target="_blank">Reddit</a>
+      <a href="#" id="sms-share" target="_blank">Text Message</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// 
+"00-TheFool.jpg"
+"16-TheTower.jpg"
+Cups10.jpg       Pentacles12.jpg  Swords14.jpg
+01-TheMagician.jpg       17-TheStar.jpg    Cups11.jpg       Pentacles13.jpg  Wands01.jpg
+02-TheHighPriestess.jpg  18-TheMoon.jpg    Cups12.jpg       Pentacles14.jpg  Wands02.jpg
+03-TheEmpress.jpg        19-TheSun.jpg     Cups13.jpg       Swords01.jpg     Wands03.jpg
+04-TheEmperor.jpg        20-Judgement.jpg  Cups14.jpg       Swords02.jpg     Wands04.jpg
+05-TheHierophant.jpg     21-TheWorld.jpg   Pentacles01.jpg  Swords03.jpg     Wands05.jpg
+06-TheLovers.jpg         CardBacks.jpg     Pentacles02.jpg  Swords04.jpg     Wands06.jpg
+07-TheChariot.jpg        Cups01.jpg        Pentacles03.jpg  Swords05.jpg     Wands07.jpg
+08-Strength.jpg          Cups02.jpg        Pentacles04.jpg  Swords06.jpg     Wands08.jpg
+09-TheHermit.jpg         Cups03.jpg        Pentacles05.jpg  Swords07.jpg     Wands09.jpg
+10-WheelOfFortune.jpg    Cups04.jpg        Pentacles06.jpg  Swords08.jpg     Wands10.jpg
+11-Justice.jpg           Cups05.jpg        Pentacles07.jpg  Swords09.jpg     Wands11.jpg
+12-TheHangedMan.jpg      Cups06.jpg        Pentacles08.jpg  Swords10.jpg     Wands12.jpg
+13-Death.jpg             Cups07.jpg        Pentacles09.jpg  Swords11.jpg     Wands13.jpg
+14-Temperance.jpg        Cups08.jpg        Pentacles10.jpg  Swords12.jpg     Wands14.jpg
+15-TheDevil.jpg          Cups09.jpg        Pentacles11.jpg  Swords13.jpg
+//
+const cardData = {
+  "majorArcana": [
+    { name: "The Fool", value: 0 },
+    { name: "The Magician", value: 1 },
+    { name: "The High Priestess", value: 2 },
+    { name: "The Empress", value: 3 },
+    { name: "The Emperor", value: 4 },
+    { name: "The Hierophant", value: 5 },
+    { name: "The Lovers", value: 6 },
+    { name: "The Chariot", value: 7 },
+    { name: "Strength", value: 8 },
+    { name: "The Hermit", value: 9 },
+    { name: "Wheel of Fortune", value: 10 },
+    { name: "Justice", value: 11 },
+    { name: "The Hanged Man", value: 12 },
+    { name: "Death", value: 13 },
+    { name: "Temperance", value: 14 },
+    { name: "The Devil", value: 15 },
+    { name: "The Tower", value: 16 },
+    { name: "The Star", value: 17 },
+    { name: "The Moon", value: 18 },
+    { name: "The Sun", value: 19 },
+    { name: "Judgement", value: 20 },
+    { name: "The World", value: 21 }
+  ],
+  "minorArcana": {
+    "Wands": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
+    "Cups": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
+    "Swords": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
+    "Pentacles": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"]
+  }
+};
+
+const drawCardsButton = document.getElementById('draw-cards');
+const readingDiv = document.getElementById('reading');
+const cardsDiv = document.getElementById('cards');
+const interpretationTextarea = document.getElementById('interpretation');
+const downloadLink = document.getElementById('download');
+const shareButton = document.getElementById('share-button');
+const shareTooltip = document.getElementById('share-tooltip');
+const shareUrlInput = document.getElementById('share-url');
+
+drawCardsButton.addEventListener('click', () => {
+  const layout = document.getElementById('layout').value;
+  const numCards = parseInt(layout);
+  const drawnCards = [];
+
+  const allCards = [];
+  cardData.majorArcana.forEach(
+    card => allCards.push(
+      { 
+        name: card.name,
+        value: card.value,
+        suit: 'Major Arcana' 
+      }
+    )
+  );
+  for (const suit in cardData.minorArcana) {
+    cardData.minorArcana[suit].forEach(card => allCards.push({ name: `${card} of ${suit}`, suit: suit }));
+  }
+
+  for (let i = 0; i < numCards; i++) {
+    const isReversed = Math.random() < 0.5;
+    const cardIndex = Math.floor(Math.random() * allCards.length);
+    const card = allCards.splice(cardIndex, 1)[0]; // Modified: Get the first element from the splice result
+    drawnCards.push({ ...card, reversed: isReversed });
+  }
+
+  displayCards(drawnCards);
+  getInterpretation(drawnCards);
+  readingDiv.style.display = 'block';
+});
+
+function displayCards(cards) {
+console.log(cards);
+  cardsDiv.innerHTML = '';
+  cards.forEach(card => {
+    console.log(card);
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    const cardImg = document.createElement('img');
+    console.log("card.name: " + card.name);
+    console.log("imageName: " + card.name.toLowerCase().replace(/ /g, '_'));
+    // const imageName = card.name.toLowerCase().replace(/ /g, '_');
+    const imageUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/` +
+    (card.suit === 'Major Arcana' ? `e/e0/RWS_Tarot_${card.name.split(" ")[1]}` :
+    `/${getSuitInitial(card.suit)}/${getCardFileName(card.name)}`);
+    console.log(imageUrl);
+    cardImg.src = imageUrl;
+    if (card.reversed) {
+      cardImg.classList.add('reversed');
+    }
+    const cardName = document.createElement('p');
+    cardName.textContent = card.name + (card.reversed ? ' (Reversed)' : '');
+    cardDiv.appendChild(cardImg);
+    cardDiv.appendChild(cardName);
+
+    const meaningTextarea = document.createElement('textarea');
+    meaningTextarea.id = `meaning-${card.name.replace(/ /g, '_')}`;
+    meaningTextarea.readOnly = true;
+    cardDiv.appendChild(meaningTextarea);
+
+    cardsDiv.appendChild(cardDiv);
+    getCardMeaning(card.name, card.reversed, meaningTextarea.id);
+  });
+}
+
+function getCardFileName(cardName) {
+    const parts = cardName.split(' ');
+    if (parts === 'Ace') return `RWS_Tarot_Ace_of_${parts[3]}.jpg`;
+    if (parts.length > 2) {
+        return `RWS_Tarot_${parts[0]}_of_${parts[2]}.jpg`
+    }
+    return `RWS_Tarot_${parts[0]}.jpg`;
+}
+
+
+function getSuitInitial(suit) {
+    const suitMap = {
+        'Wands': 'b',
+        'Cups': 'd',
+        'Swords': 'c',
+        'Pentacles': '9'
+    };
+    return suitMap[suit];
+}
+
+async function getCardMeaning(cardName, isReversed, elementId) {
+  // **GEMINI API CALL for individual card meaning**
+  // Replace this with your actual Gemini API call
+  const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
+  // const response = await callGeminiAPI(prompt);
+  // document.getElementById(elementId).value = response;
+  document.getElementById(elementId).value = `Meaning for ${cardName}${isReversed ? ' (Reversed)' : ''} from Gemini`;
+}
+
+async function getInterpretation(cards) {
+  // **GEMINI API CALL for overall interpretation**
+  // Replace this with your actual Gemini API call
+  const query = document.getElementById('query').value;
+  const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
+  const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
+  // const response = await callGeminiAPI(prompt);
+  // interpretationTextarea.value = response;
+  interpretationTextarea.value = `Interpretation for the reading based on the query "${query}" and cards: ${cardNames}.`;
+
+  // Prepare download link
+  const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
+  const blob = new Blob([readingText], { type: 'text/plain' });
+  downloadLink.href = URL.createObjectURL(blob);
+  downloadLink.download = 'tarot_reading.txt';
+}
+
+shareButton.addEventListener('click', () => {
+  shareUrlInput.value = window.location.href;
+  shareTooltip.style.display = 'block';
+  shareUrlInput.select();
+});
+
+</script>
+</body>
+</html>
