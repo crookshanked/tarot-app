@@ -37,7 +37,7 @@
 
 <button id="draw-cards">Draw Cards</button>
 
-  <div id="reading" style="display:none;">
+<div id="reading" style="display:none;">
   <div id="cards" class="card-container"></div>
   <h2>Interpretation</h2>
   <textarea id="interpretation" readonly></textarea>
@@ -47,74 +47,126 @@
     <div id="share-tooltip" style="display:none;">
       <input type="text" id="share-url" readonly>
       <br>
-      <a href="#" id="facebook-share" target="_blank">Facebook</a>
-      <a href="#" id="twitter-share" target="_blank">X</a>
-      <a href="#" id="bluesky-share" target="_blank">Bluesky</a>
-      <a href="#" id="instagram-share" target="_blank">Instagram</a>
-      <a href="#" id="reddit-share" target="_blank">Reddit</a>
-      <a href="#" id="sms-share" target="_blank">Text Message</a>
+      <a href="#" id="facebook-share">Facebook</a>
+      <a href="#" id="twitter-share">X</a>
+      <a href="#" id="bluesky-share">Bluesky</a>
+      <a href="#" id="instagram-share">Instagram</a>
+      <a href="#" id="reddit-share">Reddit</a>
+      <a href="#" id="sms-share">Text Message</a>
     </div>
   </div>
 </div>
 
 <script>
-// 
-"00-TheFool.jpg"
-"16-TheTower.jpg"
-Cups10.jpg       Pentacles12.jpg  Swords14.jpg
-01-TheMagician.jpg       17-TheStar.jpg    Cups11.jpg       Pentacles13.jpg  Wands01.jpg
-02-TheHighPriestess.jpg  18-TheMoon.jpg    Cups12.jpg       Pentacles14.jpg  Wands02.jpg
-03-TheEmpress.jpg        19-TheSun.jpg     Cups13.jpg       Swords01.jpg     Wands03.jpg
-04-TheEmperor.jpg        20-Judgement.jpg  Cups14.jpg       Swords02.jpg     Wands04.jpg
-05-TheHierophant.jpg     21-TheWorld.jpg   Pentacles01.jpg  Swords03.jpg     Wands05.jpg
-06-TheLovers.jpg         CardBacks.jpg     Pentacles02.jpg  Swords04.jpg     Wands06.jpg
-07-TheChariot.jpg        Cups01.jpg        Pentacles03.jpg  Swords05.jpg     Wands07.jpg
-08-Strength.jpg          Cups02.jpg        Pentacles04.jpg  Swords06.jpg     Wands08.jpg
-09-TheHermit.jpg         Cups03.jpg        Pentacles05.jpg  Swords07.jpg     Wands09.jpg
-10-WheelOfFortune.jpg    Cups04.jpg        Pentacles06.jpg  Swords08.jpg     Wands10.jpg
-11-Justice.jpg           Cups05.jpg        Pentacles07.jpg  Swords09.jpg     Wands11.jpg
-12-TheHangedMan.jpg      Cups06.jpg        Pentacles08.jpg  Swords10.jpg     Wands12.jpg
-13-Death.jpg             Cups07.jpg        Pentacles09.jpg  Swords11.jpg     Wands13.jpg
-14-Temperance.jpg        Cups08.jpg        Pentacles10.jpg  Swords12.jpg     Wands14.jpg
-15-TheDevil.jpg          Cups09.jpg        Pentacles11.jpg  Swords13.jpg
-//
 const cardData = {
   "majorArcana": [
-    { name: "The Fool", value: 0 },
-    { name: "The Magician", value: 1 },
-    { name: "The High Priestess", value: 2 },
-    { name: "The Empress", value: 3 },
-    { name: "The Emperor", value: 4 },
-    { name: "The Hierophant", value: 5 },
-    { name: "The Lovers", value: 6 },
-    { name: "The Chariot", value: 7 },
-    { name: "Strength", value: 8 },
-    { name: "The Hermit", value: 9 },
-    { name: "Wheel of Fortune", value: 10 },
-    { name: "Justice", value: 11 },
-    { name: "The Hanged Man", value: 12 },
-    { name: "Death", value: 13 },
-    { name: "Temperance", value: 14 },
-    { name: "The Devil", value: 15 },
-    { name: "The Tower", value: 16 },
-    { name: "The Star", value: 17 },
-    { name: "The Moon", value: 18 },
-    { name: "The Sun", value: 19 },
-    { name: "Judgement", value: 20 },
-    { name: "The World", value: 21 }
+    { name: "The Fool", value: 0, file: "00-thefool.jpg" },
+    { name: "The Magician", value: 1, file: "01-themagician.jpg" },
+    { name: "The High Priestess", value: 2, file: "02-thehighpriestess.jpg" },
+    { name: "The Empress", value: 3, file: "03-theempress.jpg" },
+    { name: "The Emperor", value: 4, file: "04-theemperor.jpg" },
+    { name: "The Hierophant", value: 5, file: "05-thehierophant.jpg" },
+    { name: "The Lovers", value: 6, file: "06-thelovers.jpg" },
+    { name: "The Chariot", value: 7, file: "07-thechariot.jpg" },
+    { name: "Strength", value: 8, file: "08-strength.jpg" },
+    { name: "The Hermit", value: 9, file: "09-thehermit.jpg" },
+    { name: "Wheel of Fortune", value: 10, file: "10-wheeloffortune.jpg" },
+    { name: "Justice", value: 11, file: "11-justice.jpg" },
+    { name: "The Hanged Man", value: 12, file: "12-thehangedman.jpg" },
+    { name: "Death", value: 13, file: "13-death.jpg" },
+    { name: "Temperance", value: 14, file: "14-temperance.jpg" },
+    { name: "The Devil", value: 15, file: "15-thedevil.jpg" },
+    { name: "The Tower", value: 16, file: "16-thetower.jpg" },
+    { name: "The Star", value: 17, file: "17-thestar.jpg" },
+    { name: "The Moon", value: 18, file: "18-themoon.jpg" },
+    { name: "The Sun", value: 19, file: "19-thesun.jpg" },
+    { name: "Judgement", value: 20, file: "20-judgement.jpg" },
+    { name: "The World", value: 21, file: "21-theworld.jpg" }
   ],
-  "minorArcana": {
-    "Wands": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
-    "Cups": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
-    "Swords": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"],
-    "Pentacles": ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"]
-  }
+  // 1 = Ace, 11 = Page, 12 = Knight, 13 = Queen, 14 = King
+  "minorArcana": [
+    {
+      "Wands": [
+          {1: "wands01.jpg"},
+          {2: "wands02.jpg"},
+          {3: "wands03.jpg"},
+          {4: "wands04.jpg"},
+          {5: "wands05.jpg"}, 
+          {6: "wands06.jpg"},
+          {7: "wands07.jpg"},
+          {8: "wands08.jpg"},
+          {9: "wands09.jpg"},
+          {10: "wands10.jpg"},
+          {11: "wands11.jpg"},
+          {12: "wands12.jpg"},
+          {13: "wands13.jpg"},
+          {14: "wands14.jpg"},
+      ]
+    },
+    {
+      "Cups": [
+          {1: "cups01.jpg"},
+          {2: "cups02.jpg"},
+          {3: "cups03.jpg"},
+          {4: "cups04.jpg"},
+          {5: "cups05.jpg"},
+          {6: "cups06.jpg"},
+          {7: "cups07.jpg"},
+          {8: "cups08.jpg"},
+          {9: "cups09.jpg"},
+          {10: "cups10.jpg"},
+          {11: "cups11.jpg"},
+          {12: "cups12.jpg"},
+          {13: "cups13.jpg"},
+          {14: "cups14.jpg"}
+        ]
+    },
+    {
+      "Swords": [
+          {1: "swords01.jpg"},
+          {2: "swords02.jpg"},
+          {3: "swords03.jpg"},
+          {4: "swords04.jpg"},
+          {5: "swords05.jpg"},
+          {6: "swords06.jpg"},
+          {7: "swords07.jpg"},
+          {8: "swords08.jpg"},
+          {9: "swords09.jpg"},
+          {10: "swords10.jpg"},
+          {11: "swords11.jpg"},
+          {12: "swords12.jpg"},
+          {13: "swords13.jpg"},
+          {14: "swords14.jpg"}
+        ]
+    },
+    {
+      "Pentacles": [
+          {1: "pentacles01.jpg"},
+          {2: "pentacles02.jpg"},
+          {3: "pentacles03.jpg"},
+          {4: "pentacles04.jpg"},
+          {5: "pentacles05.jpg"},
+          {6: "pentacles06.jpg"},
+          {7: "pentacles07.jpg"},
+          {8: "pentacles08.jpg"},
+          {9: "pentacles09.jpg"},
+          {10: "pentacles10.jpg"},
+          {11: "pentacles11.jpg"},
+          {12: "pentacles12.jpg"},
+          {13: "pentacles13.jpg"},
+          {14: "pentacles14.jpg"}
+      ]
+    }
+  ]
 };
-
+console.log(cardData);
+// throw new Error("die");
+const cardDirectory = "assets/images/cards/";
 const drawCardsButton = document.getElementById('draw-cards');
 const readingDiv = document.getElementById('reading');
 const cardsDiv = document.getElementById('cards');
 const interpretationTextarea = document.getElementById('interpretation');
+
 const downloadLink = document.getElementById('download');
 const shareButton = document.getElementById('share-button');
 const shareTooltip = document.getElementById('share-tooltip');
@@ -131,12 +183,23 @@ drawCardsButton.addEventListener('click', () => {
       { 
         name: card.name,
         value: card.value,
-        suit: 'Major Arcana' 
+        suit: 'Major Arcana',
+        file: cardDirectory + card.file
       }
     )
   );
   for (const suit in cardData.minorArcana) {
-    cardData.minorArcana[suit].forEach(card => allCards.push({ name: `${card} of ${suit}`, suit: suit }));
+    cardData.minorArcana[suit].forEach(
+      // console.log("minor arcana card: ");
+      // console.log(card);
+      card => allCards.push(
+        { 
+          name: `${card} of ${suit}`,
+          suit: suit
+          // file: cardDirectory + card.
+        }
+      )
+    );
   }
 
   for (let i = 0; i < numCards; i++) {
@@ -159,13 +222,7 @@ console.log(cards);
     const cardDiv = document.createElement('div');
     cardDiv.classList.add('card');
     const cardImg = document.createElement('img');
-    console.log("card.name: " + card.name);
-    console.log("imageName: " + card.name.toLowerCase().replace(/ /g, '_'));
-    // const imageName = card.name.toLowerCase().replace(/ /g, '_');
-    const imageUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/` +
-    (card.suit === 'Major Arcana' ? `e/e0/RWS_Tarot_${card.name.split(" ")[1]}` :
-    `/${getSuitInitial(card.suit)}/${getCardFileName(card.name)}`);
-    console.log(imageUrl);
+    const imageUrl = 
     cardImg.src = imageUrl;
     if (card.reversed) {
       cardImg.classList.add('reversed');
