@@ -1,21 +1,18 @@
-import './style.css'
-import { debugMode, setDebug } from './debug.ts'
-import { cardData } from './cardData.ts'
-import { constants } from './constants.ts'
-import './drawCards.ts'
-import './buttons.ts'
-import './geminiAPI.ts'
-import './displayCards.ts'
-
+import './style.css';
+import { debugMode, setDebug } from './debug.ts';
+import { cardData } from './cardData.ts';
+import { constants } from './constants.ts';
+import './drawCards.ts';
+import './buttons.ts';
+import './geminiAPI.ts';
+import './displayCards.ts';
 setDebug(false);
-if(debugMode)
-  {
-      console.log(constants);
-      console.log('cardData: '+cardData);
-      // console.log(cardData);
-  }
-
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+if (debugMode) {
+  console.log(constants);
+  console.log('cardData: ' + cardData);
+  // console.log(cardData);
+}
+document.querySelector('#app').innerHTML = `
 <h1>Tarot Card Reading</h1>
 <div>
   <label for="api-key">Gemini API Key:</label>
@@ -83,4 +80,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
   </div>
 </div>
-`
+`;

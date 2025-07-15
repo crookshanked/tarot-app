@@ -1,21 +1,20 @@
-import './style.css'
-import { debugMode, setDebug } from './debug.ts'
-import { cardData } from './cardData.ts'
-import { constants } from './constants.ts'
-import './drawCards.ts'
-import './buttons.ts'
-import './geminiAPI.ts'
-import './displayCards.ts'
-
-setDebug(false);
-if(debugMode)
-  {
-      console.log(constants);
-      console.log('cardData: '+cardData);
-      // console.log(cardData);
-  }
-
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./style.css");
+const debug_ts_1 = require("./debug.ts");
+const cardData_ts_1 = require("./cardData.ts");
+const constants_ts_1 = require("./constants.ts");
+require("./drawCards.ts");
+require("./buttons.ts");
+require("./geminiAPI.ts");
+require("./displayCards.ts");
+(0, debug_ts_1.setDebug)(false);
+if (debug_ts_1.debugMode) {
+    console.log(constants_ts_1.constants);
+    console.log('cardData: ' + cardData_ts_1.cardData);
+    // console.log(cardData);
+}
+document.querySelector('#app').innerHTML = `
 <h1>Tarot Card Reading</h1>
 <div>
   <label for="api-key">Gemini API Key:</label>
@@ -83,4 +82,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
   </div>
 </div>
-`
+`;
