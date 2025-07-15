@@ -87,7 +87,7 @@
     <button id="get-interpretation-button">Get Interpretation</button>
     <textarea id="interpretation" readonly></textarea>
     <a id="download" href="#">Download Reading</a>
-    <div id="share">
+    <!-- <div id="share">
       <button id="share-button">Share</button>
       <div id="share-tooltip" style="display:none;">
         <input type="text" id="share-url" readonly>
@@ -99,7 +99,7 @@
         <a href="#" id="reddit-share">Reddit</a>
         <a href="#" id="sms-share">Text Message</a>
       </div>
-    </div>
+    </div> -->
   </div>
   <script>
     let debugMode = false;
@@ -252,8 +252,7 @@
 
       const suits = ["Wands", "Cups", "Swords", "Pentacles"];
       suits.forEach(suit => {
-        if(debugMode)
-        {
+        if (debugMode) {
           console.log('suit: ' + suit);
           console.log('cardData.minorArcana: ');
           console.log(cardData.minorArcana);
@@ -317,7 +316,7 @@
 
       }
 
-    return drawnCards;
+      return drawnCards;
     }
 
 
@@ -411,55 +410,55 @@
 
     // Assuming shareButton is also obtained via getElementById or similar
     // Add a check for shareButton
-    if (shareButton) {
-      shareButton.addEventListener(
-        'click', () => {
-          // Add checks for constants properties
-          if (constants && shareUrlInput) {
-            shareUrlInput.value = window.location.href;
-          }
-          if (constants && shareTooltip) {
-            shareTooltip.style.display = 'block';
-          }
-          // Check again before calling select as shareUrlInput might be null
-          if (constants && shareUrlInput) {
-            shareUrlInput.select();
-          }
-        }
-      );
-    }
+    // if (shareButton) {
+    //   shareButton.addEventListener(
+    //     'click', () => {
+    //       // Add checks for constants properties
+    //       if (shareUrlInput) {
+    //         shareUrlInput.value = window.location.href;
+    //       }
+    //       if (shareTooltip) {
+    //         shareTooltip.style.display = 'block';
+    //       }
+    //       // Check again before calling select as shareUrlInput might be null
+    //       if (shareUrlInput) {
+    //         shareUrlInput.select();
+    //       }
+    //     }
+    //   );
+    // }
 
-    async function getCardMeaning(cardName, isReversed, elementId) {
-      // **GEMINI API CALL for individual card meaning**
-      // Replace this with your actual Gemini API call
-      const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
-      // const response = await callGeminiAPI(prompt);
-      // document.getElementById(elementId).value = response;
-      document.getElementById(elementId).value = `Meaning for ${cardName}${isReversed ? ' (Reversed)' : ''} from Gemini`;
-    }
+    // async function getCardMeaning(cardName, isReversed, elementId) {
+    //   // **GEMINI API CALL for individual card meaning**
+    //   // Replace this with your actual Gemini API call
+    //   const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
+    //   // const response = await callGeminiAPI(prompt);
+    //   // document.getElementById(elementId).value = response;
+    //   document.getElementById(elementId).value = `Meaning for ${cardName}${isReversed ? ' (Reversed)' : ''} from Gemini`;
+    // }
 
-    async function getInterpretation(cards) {
-      // **GEMINI API CALL for overall interpretation**
-      // Replace this with your actual Gemini API call
-      const query = document.getElementById('query').value;
-      const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
-      const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
-      // const response = await callGeminiAPI(prompt);
-      // interpretationTextarea.value = response;
-      interpretationTextarea.value = `Interpretation for the reading based on the query "${query}" and cards: ${cardNames}.`;
+    // async function getInterpretation(cards) {
+    //   // **GEMINI API CALL for overall interpretation**
+    //   // Replace this with your actual Gemini API call
+    //   const query = document.getElementById('query').value;
+    //   const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
+    //   const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
+    //   // const response = await callGeminiAPI(prompt);
+    //   // interpretationTextarea.value = response;
+    //   interpretationTextarea.value = `Interpretation for the reading based on the query "${query}" and cards: ${cardNames}.`;
 
-      // Prepare download link
-      const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
-      const blob = new Blob([readingText], { type: 'text/plain' });
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = 'tarot_reading.txt';
-    }
+    //   // Prepare download link
+    //   const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
+    //   const blob = new Blob([readingText], { type: 'text/plain' });
+    //   downloadLink.href = URL.createObjectURL(blob);
+    //   downloadLink.download = 'tarot_reading.txt';
+    // }
 
-    shareButton.addEventListener('click', () => {
-      shareUrlInput.value = window.location.href;
-      shareTooltip.style.display = 'block';
-      shareUrlInput.select();
-    });
+    // shareButton.addEventListener('click', () => {
+    //   shareUrlInput.value = window.location.href;
+    //   shareTooltip.style.display = 'block';
+    //   shareUrlInput.select();
+    // });
 
 
     async function callGeminiAPI(prompt, apiKey) {
@@ -619,7 +618,12 @@
         console.error('Error: Download link element not found.');
       }
     }
-
+    // Clear the interpretation textarea on page load
+    window.onload = function () {
+      if (interpretationTextarea) {
+        interpretationTextarea.value = '';
+      }
+    };
   </script>
 </body>
 
