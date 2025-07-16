@@ -2,81 +2,66 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Free Tarot Reading application">
+  <meta name="keywords" content="HTML, CSS, JavaScript, Tarot, Tarot Cards, Cards, Readings, Tarot Readings">
+  <meta name="author" content="Kyle Crookshank and Gemini">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tarot Card Reading</title>
-  <style>
-    body {
-      font-family: sans-serif;
-    }
-
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      margin: 10px;
-      text-align: center;
-    }
-
-    .card img {
-      width: 150px;
-    }
-
-    .reversed {
-      transform: rotate(180deg);
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
-  <h1>Tarot Card Reading</h1>
-  <div>
-    <label for="api-key">Gemini API Key:</label>
-    <input type="text" required value="" placeholder="*****************" id="api-key">
-  </div>
+  <header>
+    <h1 class="">Tarot Card Reading</h1>
+  </header>
+  <main>
+    <section>
+      <div>
+        <label for="api-key">Gemini API Key:</label>
+        <input type="text" required value="" placeholder="*****************" id="api-key">
+      </div>
 
-  <div>
-    <label for="model-select">Gemini Model:</label>
-    <select id="model-select">
-      <option value="gemini-2.0-flash" selected>gemini-2.0-flash</option>
-      <option value="gemini-1.5-flash-latest">gemini-1.5-flash-latest</option>
-      <option value="gemini-1.0-pro">gemini-1.0-pro</option>
-      <option value="gemini-1.5-pro-latest">gemini-1.5-pro-latest</option>
-    </select>
-  </div>
+      <div>
+        <label for="model-select">Gemini Model:</label>
+        <select id="model-select">
+          <option value="gemini-2.0-flash" selected>gemini-2.0-flash</option>
+          <option value="gemini-1.5-flash-latest">gemini-1.5-flash-latest</option>
+          <option value="gemini-1.0-pro">gemini-1.0-pro</option>
+          <option value="gemini-1.5-pro-latest">gemini-1.5-pro-latest</option>
+        </select>
+      </div>
 
-  <div>
-    <label for="provider-select">API Provider:</label>
-    <select id="provider-select">
-      <option value="https://generativelanguage.googleapis.com/v1beta/models/" selected>Google</option>
-      <!-- Add more providers here later if needed -->
-    </select>
-  </div>
+      <div>
+        <label for="provider-select">API Provider:</label>
+        <select id="provider-select">
+          <option value="https://generativelanguage.googleapis.com/v1beta/models/" selected>Google</option>
+          <!-- Add more providers here later if needed -->
+        </select>
+      </div>
 
-  <div>
-    <label for="deck-type">Deck Type:</label>
-    <select id="deck-type">
-      <option value="rider-waite">Rider-Waite</option>
-    </select>
-  </div>
+      <div>
+        <label for="deck-type">Deck Type:</label>
+        <select id="deck-type">
+          <option value="rider-waite">Rider-Waite</option>
+        </select>
+      </div>
 
-  <div>
-    <label for="query">Query (optional):</label>
-    <input type="text" id="query">
-  </div>
+      <div>
+        <label for="query">Query (optional):</label>
+        <input type="text" id="query">
+      </div>
 
-  <div>
-    <label for="layout">Layout:</label>
-    <select id="layout">
-      <option value="1">Single Card</option>
-      <option value="3">Three Card (Past, Present, Future)</option>
-    </select>
-  </div>
+      <div>
+        <label for="layout">Layout:</label>
+        <select id="layout">
+          <option value="1">Single Card</option>
+          <option value="3">Three Card (Past, Present, Future)</option>
+        </select>
+      </div>
+    </section>
+  </main>
+
 
   <button id="draw-cards">Draw Cards</button>
 
@@ -87,544 +72,8 @@
     <button id="get-interpretation-button">Get Interpretation</button>
     <textarea id="interpretation" readonly></textarea>
     <a id="download" href="#">Download Reading</a>
-    <!-- <div id="share">
-      <button id="share-button">Share</button>
-      <div id="share-tooltip" style="display:none;">
-        <input type="text" id="share-url" readonly>
-        <br>
-        <a href="#" id="facebook-share">Facebook</a>
-        <a href="#" id="twitter-share">X</a>
-        <a href="#" id="bluesky-share">Bluesky</a>
-        <a href="#" id="instagram-share">Instagram</a>
-        <a href="#" id="reddit-share">Reddit</a>
-        <a href="#" id="sms-share">Text Message</a>
-      </div>
-    </div> -->
   </div>
-  <script>
-    let debugMode = false;
-
-    function setDebug(debugFlag) {
-      debugMode = debugFlag;
-    }
-    setDebug(true);
-
-    const cardData = {
-      "majorArcana": [
-        { name: "The Fool", value: 0, file: "00-thefool.jpg" },
-        { name: "The Magician", value: 1, file: "01-themagician.jpg" },
-        { name: "The High Priestess", value: 2, file: "02-thehighpriestess.jpg" },
-        { name: "The Empress", value: 3, file: "03-theempress.jpg" },
-        { name: "The Emperor", value: 4, file: "04-theemperor.jpg" },
-        { name: "The Hierophant", value: 5, file: "05-thehierophant.jpg" },
-        { name: "The Lovers", value: 6, file: "06-thelovers.jpg" },
-        { name: "The Chariot", value: 7, file: "07-thechariot.jpg" },
-        { name: "Strength", value: 8, file: "08-strength.jpg" },
-        { name: "The Hermit", value: 9, file: "09-thehermit.jpg" },
-        { name: "Wheel of Fortune", value: 10, file: "10-wheeloffortune.jpg" },
-        { name: "Justice", value: 11, file: "11-justice.jpg" },
-        { name: "The Hanged Man", value: 12, file: "12-thehangedman.jpg" },
-        { name: "Death", value: 13, file: "13-death.jpg" },
-        { name: "Temperance", value: 14, file: "14-temperance.jpg" },
-        { name: "The Devil", value: 15, file: "15-thedevil.jpg" },
-        { name: "The Tower", value: 16, file: "16-thetower.jpg" },
-        { name: "The Star", value: 17, file: "17-thestar.jpg" },
-        { name: "The Moon", value: 18, file: "18-themoon.jpg" },
-        { name: "The Sun", value: 19, file: "19-thesun.jpg" },
-        { name: "Judgement", value: 20, file: "20-judgement.jpg" },
-        { name: "The World", value: 21, file: "21-theworld.jpg" }
-      ],
-      // 1 = Ace, 11 = Page, 12 = Knight, 13 = Queen, 14 = King
-      "minorArcana": [
-        {
-          "Wands": [
-            { 1: "wands01.jpg" },
-            { 2: "wands02.jpg" },
-            { 3: "wands03.jpg" },
-            { 4: "wands04.jpg" },
-            { 5: "wands05.jpg" },
-            { 6: "wands06.jpg" },
-            { 7: "wands07.jpg" },
-            { 8: "wands08.jpg" },
-            { 9: "wands09.jpg" },
-            { 10: "wands10.jpg" },
-            { 11: "wands11.jpg" },
-            { 12: "wands12.jpg" },
-            { 13: "wands13.jpg" },
-            { 14: "wands14.jpg" },
-          ]
-        },
-        {
-          "Cups": [
-            { 1: "cups01.jpg" },
-            { 2: "cups02.jpg" },
-            { 3: "cups03.jpg" },
-            { 4: "cups04.jpg" },
-            { 5: "cups05.jpg" },
-            { 6: "cups06.jpg" },
-            { 7: "cups07.jpg" },
-            { 8: "cups08.jpg" },
-            { 9: "cups09.jpg" },
-            { 10: "cups10.jpg" },
-            { 11: "cups11.jpg" },
-            { 12: "cups12.jpg" },
-            { 13: "cups13.jpg" },
-            { 14: "cups14.jpg" }
-          ]
-        },
-        {
-          "Swords": [
-            { 1: "swords01.jpg" },
-            { 2: "swords02.jpg" },
-            { 3: "swords03.jpg" },
-            { 4: "swords04.jpg" },
-            { 5: "swords05.jpg" },
-            { 6: "swords06.jpg" },
-            { 7: "swords07.jpg" },
-            { 8: "swords08.jpg" },
-            { 9: "swords09.jpg" },
-            { 10: "swords10.jpg" },
-            { 11: "swords11.jpg" },
-            { 12: "swords12.jpg" },
-            { 13: "swords13.jpg" },
-            { 14: "swords14.jpg" }
-          ]
-        },
-        {
-          "Pentacles": [
-            { 1: "pentacles01.jpg" },
-            { 2: "pentacles02.jpg" },
-            { 3: "pentacles03.jpg" },
-            { 4: "pentacles04.jpg" },
-            { 5: "pentacles05.jpg" },
-            { 6: "pentacles06.jpg" },
-            { 7: "pentacles07.jpg" },
-            { 8: "pentacles08.jpg" },
-            { 9: "pentacles09.jpg" },
-            { 10: "pentacles10.jpg" },
-            { 11: "pentacles11.jpg" },
-            { 12: "pentacles12.jpg" },
-            { 13: "pentacles13.jpg" },
-            { 14: "pentacles14.jpg" }
-          ]
-        }
-      ]
-    };
-    console.log(cardData);
-    // throw new Error("die");
-    const cardDirectory = "assets/images/cards/";
-    const drawCardsButton = document.getElementById('draw-cards');
-    const readingDiv = document.getElementById('reading');
-    const outputDiv = document.getElementById('output-div');
-    const cardsDiv = document.getElementById('cards');
-
-    const getInterpretationButton = document.getElementById('get-interpretation-button');
-    const interpretationTextarea = document.getElementById('interpretation');
-    const layoutElement = document.getElementById('layout'); // Assert type and allow null
-
-    const downloadLink = document.getElementById('download');
-    const shareButton = document.getElementById('share-button');
-    const shareTooltip = document.getElementById('share-tooltip');
-    const shareUrlInput = document.getElementById('share-url');
-
-    const apiKeyInput = document.getElementById('api-key');
-    const modelSelect = document.getElementById('model-select');
-    const providerSelect = document.getElementById('provider-select');
-
-
-    (debugMode) ? console.log('cardData: ' + cardData) : '';
-
-    function drawCards(numCards) {
-      (debugMode) ? console.log('drawCards(numCards): ' + numCards) : '';
-      const drawnCards = [];
-      const allCards = [];
-      (debugMode) ? console.log('drawCards - cardData: ') : '';
-      (debugMode) ? console.log(cardData) : '';
-      cardData.majorArcana.forEach(
-        card => allCards.push({
-          name: card.name,
-          value: card.value,
-          suit: 'Major Arcana',
-          file: cardDirectory + card.file // Added non-null assertion
-        })
-      );
-      (debugMode) ? console.log('cardData.majorArcana - allCards: ' + allCards) : '';
-
-      const suits = ["Wands", "Cups", "Swords", "Pentacles"];
-      suits.forEach(suit => {
-        if (debugMode) {
-          console.log('suit: ' + suit);
-          console.log('cardData.minorArcana: ');
-          console.log(cardData.minorArcana);
-          console.log('cardData.minorArcana.: ');
-          console.log(cardData.minorArcana);
-        }
-        cardData.minorArcana.forEach(suitObject => {
-          const suitKey = Object.keys(suitObject)[0];
-          if (suitKey === suit) {
-            suitObject[suit].forEach(cardNumber => {
-              console.log('cardNumber :' + cardNumber);
-              const cardNumberKey = Object.keys(cardNumber)[0];
-              const fileName = cardNumber[cardNumberKey];
-              let cardValue = cardNumberKey;
-              (debugMode) ? console.log('let cardValue = cardNumberKey: ' + cardValue) : '';
-              switch (parseInt(cardNumberKey)) {
-                case 1:
-                  cardValue = "Ace";
-                  break;
-                case 11:
-                  cardValue = "Page";
-                  break;
-                case 12:
-                  cardValue = "Knight";
-                  break;
-                case 13:
-                  cardValue = "Queen";
-                  break;
-                case 14:
-                  cardValue = "King";
-                  break;
-                default:
-                  break;
-              }
-              (debugMode) ? console.log('after switch() - let cardValue = cardNumberKey: ' + cardValue) : '';
-              const cardName = `${cardValue} of ${suit}`;
-              if (fileName) {
-                (debugMode) ? console.log('fileName: ' + fileName) : '';
-                allCards.push({
-                  name: cardName,
-                  suit: suit,
-                  file: cardDirectory + fileName
-                });
-              }
-              (debugMode) ? console.log('fileName push allCards: ' + allCards) : '';
-            });
-          }
-        });
-      });
-
-      for (let i = 0; i < numCards; i++) {
-        const isReversed = Math.random() < 0.5;
-        const cardIndex = Math.floor(Math.random() * allCards.length);
-        const card = allCards.splice(cardIndex, 1)[0]; // Get the first element from the splice result
-        (debugMode) ? console.log('isReversed: ' + isReversed) : '';
-        (debugMode) ? console.log('cardIndex: ' + cardIndex) : '';
-        (debugMode) ? console.log('card: ' + card) : '';
-
-        drawnCards.push({ ...card, reversed: isReversed });
-        (debugMode) ? console.log('drawnCards.push: ' + drawnCards) : '';
-
-      }
-
-      return drawnCards;
-    }
-
-
-    function displayCards(cards) {
-      (debugMode) ? console.log(cards) : '';
-      cards.forEach(card => {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('card');
-        const cardImg = document.createElement('img');
-        const imageUrl = card.file;
-        cardImg.src = imageUrl;
-        if (card.reversed) {
-          cardImg.classList.add('reversed');
-        }
-        const cardName = document.createElement('p');
-        cardName.textContent = card.name + (card.reversed ? ' (Reversed)' : '');
-        cardDiv.appendChild(cardImg);
-        cardDiv.appendChild(cardName);
-
-        const meaningTextarea = document.createElement('textarea');
-        meaningTextarea.id = `meaning-${card.name.replace(/ /g, '_')}`;
-        meaningTextarea.readOnly = true;
-        cardDiv.appendChild(meaningTextarea);
-
-        // Check if cardsDiv exists before appending
-        if (cardsDiv) {
-          cardsDiv.appendChild(cardDiv);
-        } else {
-          console.error('Error: cardsDiv is null or undefined. Cannot display cards.');
-          // Communicate to the user that the cards could not be displayed
-          const errorMessage = document.createElement('p');
-          errorMessage.textContent = 'Error displaying cards. Please try again later.';
-          errorMessage.style.color = 'red'; // Optional: style the error message
-          document.body.appendChild(errorMessage); // Append the error message to the body
-        }
-        getCardMeaning(card.name, card.reversed, meaningTextarea.id);
-      });
-    }
-
-    let lastDrawnCards = []; // Variable to store the last drawn cards
-
-    if (drawCardsButton) {
-      (debugMode) ? console.log("drawCardsButton: " + drawCardsButton) : '';
-      drawCardsButton.addEventListener('click', () => {
-        (debugMode) ? console.log("addEventListener click to drawCardsButton" + drawCardsButton) : '';
-        if (!layoutElement) {
-          console.error('Error: Layout element not found.');
-          return;
-        }
-        (debugMode) ? console.log('layoutElement :' + layoutElement) : '';
-        const layout = layoutElement.value;
-        (debugMode) ? console.log('layout :' + layoutElement.value) : '';
-        // (debugMode) ? console.log() : '';
-        const numberOfCardsToDraw = parseInt(layout);
-        (debugMode) ? console.log('numberOfCardsToDraw: ' + numberOfCardsToDraw) : '';
-
-        const drawnCards = drawCards(numberOfCardsToDraw);
-        (debugMode) ? console.log('drawnCards = drawCards(numberOfCardsToDraw): ' + drawnCards) : '';
-        const output = displayCards(drawnCards);
-        (debugMode) ? console.log('output = displayCards(drawnCards): ' + output) : '';
-        // Removed the automatic call to getInterpretation(drawnCards);
-        lastDrawnCards = drawnCards; // Store the drawn cards
-
-        // Check if readingDiv exists before accessing its style
-        if (readingDiv) {
-          readingDiv.style.display = 'block';
-        } else {
-          // readingDiv missing!
-          console.error('Error: Reading div not found.');
-          // Optionally, inform the user visually
-          if (outputDiv) {
-            outputDiv.innerHTML = '<p style="color: red;">Error: Interpretation area not found. Please check the page structure.</p>';
-            outputDiv.style.display = 'block'; // Ensure output div is visible
-          }
-        }
-      });
-    }
-
-    if (getInterpretationButton) {
-      getInterpretationButton.addEventListener('click', () => {
-        if (lastDrawnCards.length > 0) {
-          getInterpretation(lastDrawnCards); // Call getInterpretation with the stored cards
-        } else {
-          // Check if interpretationTextarea exists before setting its value
-          if (interpretationTextarea) {
-            interpretationTextarea.value = "Draw cards first to get an interpretation.";
-          }
-        }
-      });
-    }
-
-    // Assuming shareButton is also obtained via getElementById or similar
-    // Add a check for shareButton
-    // if (shareButton) {
-    //   shareButton.addEventListener(
-    //     'click', () => {
-    //       // Add checks for constants properties
-    //       if (shareUrlInput) {
-    //         shareUrlInput.value = window.location.href;
-    //       }
-    //       if (shareTooltip) {
-    //         shareTooltip.style.display = 'block';
-    //       }
-    //       // Check again before calling select as shareUrlInput might be null
-    //       if (shareUrlInput) {
-    //         shareUrlInput.select();
-    //       }
-    //     }
-    //   );
-    // }
-
-    // async function getCardMeaning(cardName, isReversed, elementId) {
-    //   // **GEMINI API CALL for individual card meaning**
-    //   // Replace this with your actual Gemini API call
-    //   const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
-    //   // const response = await callGeminiAPI(prompt);
-    //   // document.getElementById(elementId).value = response;
-    //   document.getElementById(elementId).value = `Meaning for ${cardName}${isReversed ? ' (Reversed)' : ''} from Gemini`;
-    // }
-
-    // async function getInterpretation(cards) {
-    //   // **GEMINI API CALL for overall interpretation**
-    //   // Replace this with your actual Gemini API call
-    //   const query = document.getElementById('query').value;
-    //   const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
-    //   const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
-    //   // const response = await callGeminiAPI(prompt);
-    //   // interpretationTextarea.value = response;
-    //   interpretationTextarea.value = `Interpretation for the reading based on the query "${query}" and cards: ${cardNames}.`;
-
-    //   // Prepare download link
-    //   const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
-    //   const blob = new Blob([readingText], { type: 'text/plain' });
-    //   downloadLink.href = URL.createObjectURL(blob);
-    //   downloadLink.download = 'tarot_reading.txt';
-    // }
-
-    // shareButton.addEventListener('click', () => {
-    //   shareUrlInput.value = window.location.href;
-    //   shareTooltip.style.display = 'block';
-    //   shareUrlInput.select();
-    // });
-
-
-    async function callGeminiAPI(prompt, apiKey) {
-      const API_KEY = apiKey;
-      // Assert types for select elements to access the .value property
-      const MODEL_NAME = (modelSelect).value; // Get model from select input
-      const API_BASE_URL = (providerSelect).value; // Get base input URL from select input
-
-      if (!MODEL_NAME || !API_BASE_URL) {
-        console.error('Error: Could not get model name or API base URL from ');
-        return null; // Or throw an error, depending on desired behavior
-      }
-
-      const url = `${API_BASE_URL}${MODEL_NAME}:generateContent?key=${API_KEY}`;
-
-
-      //TODO: confirm any needed changes...
-      const requestBody = {
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }]
-      };
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`API error: ${response.status} - ${errorData.error.message}`);
-        }
-
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-
-      } catch (error) {
-        console.error('Error calling Gemini API:', error);
-        return null;
-      }
-    }
-
-    async function getCardMeaning(cardName, isReversed, elementId) {
-
-      // **GEMINI API CALL for individual card meaning**
-      const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
-      // Take the value of the constant apiKeyInput
-      const apiKey = (apiKeyInput).value; // Assert type as HTMLInputElement
-      const meaningTextarea = document.getElementById(elementId); // Assert type as HTMLTextAreaElement or null
-
-      if (!apiKey) {
-        if (meaningTextarea) {
-          meaningTextarea.value = "Please enter your Gemini API Key.";
-        }
-        console.error("API Key is missing.");
-        return;
-      }
-
-      // Check if the textarea element was found
-      if (!meaningTextarea) {
-        console.error(`Error: Textarea element with id "${elementId}" not found.`);
-        return;
-      }
-
-      // Add loading indicator animation
-      meaningTextarea.value = "Getting meaning"; // Initial loading message
-      let loadingInterval = setInterval(() => { // Start interval
-        meaningTextarea.value += "."; // Append a period
-      }, 1000); // Every 1000ms (1 second)
-
-
-      // Call to the Gemini API using it and the value of the constant prompt.
-      try {
-        const responseText = await callGeminiAPI(prompt, apiKey); // Await the promise directly
-
-        clearInterval(loadingInterval); // Clear the interval after fetch is complete
-
-        if (responseText) {
-          // console.log("Gemini response:", responseText);
-          meaningTextarea.value = responseText; // Update with actual meaning
-        } else {
-          meaningTextarea.value = "Error getting interpretation from Gemini. Please wait a minute and try again."; // Update with error message
-          console.log("ResponseText: Error getting interpretation from Gemini.");
-        }
-      } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        clearInterval(loadingInterval); // Clear the interval in case of error
-        meaningTextarea.value = "Catch: Error getting interpretation from Gemini."; // Update with catch error message
-      }
-    }
-
-    async function getInterpretation(cards) {
-      // **GEMINI API CALL for overall interpretation**
-      const queryInput = document.getElementById('query'); // Assert type as HTMLInputElement or null
-      const query = queryInput?.value || ''; // Safely access value with optional chaining, default to empty string
-      const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
-      const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
-
-      const apiKey = (apiKeyInput).value; // Assert type as HTMLInputElement
-
-      const interpretationTextarea = document.getElementById('interpretation'); // Assert type as HTMLTextAreaElement or null
-
-      if (!apiKey) {
-        if (interpretationTextarea) {
-          interpretationTextarea.value = "Please enter your Gemini API Key to get the overall interpretation.";
-        }
-        console.error("API Key is missing for overall interpretation.");
-        return;
-      }
-
-      // Check if the textarea element was found
-      if (!interpretationTextarea) {
-        console.error('Error: Interpretation textarea element not found.');
-        return;
-      }
-
-      // Add loading indicator animation
-      interpretationTextarea.value = "Getting interpretation"; // Initial loading message
-      let loadingInterval = setInterval(() => { // Start interval
-        interpretationTextarea.value += "."; // Append a period
-      }, 1000); // Every 1000ms (1 second)
-
-      try {
-        const responseText = await callGeminiAPI(prompt, apiKey); // Using the same placeholder API call for consistency
-
-        clearInterval(loadingInterval); // Clear the interval after fetch is complete
-
-        if (responseText) {
-          interpretationTextarea.value = responseText; // Update with actual interpretation
-        } else {
-          interpretationTextarea.value = "Error getting overall interpretation from Gemini."; // Update with error message
-          console.error("ResponseText: Error getting overall interpretation from Gemini.");
-        }
-
-      } catch (error) {
-        console.error("Error calling Gemini API for interpretation:", error);
-        clearInterval(loadingInterval); // Clear the interval in case of error
-        interpretationTextarea.value = "Error getting overall interpretation from Gemini."; // Update with catch error message
-      }
-
-
-      // Prepare download link
-      const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
-      const blob = new Blob([readingText], { type: 'text/plain' });
-
-      // Check if the download link element was found
-      if (downloadLink) {
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = 'tarot_reading.txt';
-      } else {
-        console.error('Error: Download link element not found.');
-      }
-    }
-    // Clear the interpretation textarea on page load
-    window.onload = function () {
-      if (interpretationTextarea) {
-        interpretationTextarea.value = '';
-      }
-    };
-  </script>
+  <script src="assets/js/app.js"></script>
 </body>
 
 </html>
