@@ -216,37 +216,56 @@ function drawCards(numCards) {
   return drawnCards;
 }
 
+function createCardDiv(card) {
+  const cardDiv = document.createElement('div');
+  cardDiv.classList.add('tarotcard', 'col');
+  return cardDiv;
+}
+
+function createCardImage(card) {
+  const cardImg = document.createElement('img');
+  cardImg.src = card.file;
+  if (card.reversed) {
+    cardImg.classList.add('reversed');
+  }
+  return cardImg;
+}
+
+function createCardName(card) {
+  const cardName = document.createElement('p');
+  cardName.textContent = card.name + (card.reversed ? ' (Reversed)' : '');
+  return cardName;
+}
+
+function createMeaningTextarea(card) {
+  const meaningTextarea = document.createElement('textarea');
+  meaningTextarea.id = `meaning-${card.name.replace(/ /g, '_')}`;
+  meaningTextarea.readOnly = true;
+  meaningTextarea.classList.add('form-control');
+  return meaningTextarea;
+}
 
 function displayCards(cards) {
   (debugMode) ? console.log(cards) : '';
   cards.forEach(card => {
-    const cardDiv = document.createElement('div');
-    cardDiv.classList.add('card');
-    const cardImg = document.createElement('img');
-    const imageUrl = card.file;
-    cardImg.src = imageUrl;
-    if (card.reversed) {
-      cardImg.classList.add('reversed');
-    }
-    const cardName = document.createElement('p');
-    cardName.textContent = card.name + (card.reversed ? ' (Reversed)' : '');
+    const cardDiv = createCardDiv(card);
+    const cardImg = createCardImage(card);
+    const cardName = createCardName(card);
+    const meaningTextarea = createMeaningTextarea(card);
+
     cardDiv.appendChild(cardImg);
     cardDiv.appendChild(cardName);
-
-    const meaningTextarea = document.createElement('textarea');
-    meaningTextarea.id = `meaning-${card.name.replace(/ /g, '_')}`;
-    meaningTextarea.readOnly = true;
     cardDiv.appendChild(meaningTextarea);
-
+    
     // Check if cardsDiv exists before appending
     if (cardsDiv) {
       cardsDiv.appendChild(cardDiv);
     } else {
       console.error('Error: cardsDiv is null or undefined. Cannot display cards.');
-      // Communicate to the user that the cards could not be displayed
       const errorMessage = document.createElement('p');
       errorMessage.textContent = 'Error displaying cards. Please try again later.';
       errorMessage.style.color = 'red'; // Optional: style the error message
+
       document.body.appendChild(errorMessage); // Append the error message to the body
     }
     getCardMeaning(card.name, card.reversed, meaningTextarea.id);
@@ -255,10 +274,27 @@ function displayCards(cards) {
 
 let lastDrawnCards = []; // Variable to store the last drawn cards
 
+// Function to clear displayed cards
+function clearCards() {
+  const cardDivs = document.querySelectorAll('#cards .tarotcard');
+  cardDivs.forEach(cardDiv => cardDiv.remove());
+}
+
 if (drawCardsButton) {
   (debugMode) ? console.log("drawCardsButton: " + drawCardsButton) : '';
   drawCardsButton.addEventListener('click', () => {
     (debugMode) ? console.log("addEventListener click to drawCardsButton" + drawCardsButton) : '';
+    let confirmClear = true; // Initialize to true, so it doesn't block if #reading is not visible
+
+    // Check if the div#reading is visible and if it contains div.tarotcard elements
+    if (readingDiv && readingDiv.style.display === 'block' && cardsDiv.querySelectorAll('.tarotcard').length > 0) {
+      // Prompt the user to confirm they want to clear the cards and draw again
+      confirmClear = confirm("Are you sure you want to clear the current cards and draw again?");
+    }
+
+    if (confirmClear) {
+      clearCards(); // Clear the cards before drawing new ones
+    }
     if (!layoutElement) {
       console.error('Error: Layout element not found.');
       return;
@@ -291,6 +327,7 @@ if (drawCardsButton) {
     }
   });
 }
+
 
 if (getInterpretationButton) {
   getInterpretationButton.addEventListener('click', () => {
@@ -405,6 +442,8 @@ async function callGeminiAPI(prompt, apiKey) {
 }
 
 async function getCardMeaning(cardName, isReversed, elementId) {
+  // Disable the button to prevent multiple clicks
+  drawCardsButton.disabled = true;
 
   // **GEMINI API CALL for individual card meaning**
   const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
@@ -417,12 +456,16 @@ async function getCardMeaning(cardName, isReversed, elementId) {
       meaningTextarea.value = "Please enter your Gemini API Key.";
     }
     console.error("API Key is missing.");
+    // Re-enable the button in case of an early return
+    drawCardsButton.disabled = false;
     return;
   }
 
   // Check if the textarea element was found
   if (!meaningTextarea) {
     console.error(`Error: Textarea element with id "${elementId}" not found.`);
+    // Re-enable the button in case of an early return
+    drawCardsButton.disabled = false;
     return;
   }
 
@@ -450,6 +493,9 @@ async function getCardMeaning(cardName, isReversed, elementId) {
     console.error("Error calling Gemini API:", error);
     clearInterval(loadingInterval); // Clear the interval in case of error
     meaningTextarea.value = "Catch: Error getting interpretation from Gemini."; // Update with catch error message
+  } finally {
+    // Re-enable the button after the API call is complete (or has failed)
+    drawCardsButton.disabled = false;
   }
 }
 
@@ -504,7 +550,17 @@ async function getInterpretation(cards) {
 
 
   // Prepare download link
-  const readingText = `Query: ${query}\n\nCards Drawn:\n${cardNames}\n\nInterpretation:\n${interpretationTextarea.value}`;
+  let readingText = `Query: ${query}\n\nCards Drawn:\n`;
+
+  cards.forEach(card => {
+    const cardName = card.name + (card.reversed ? ' (Reversed)' : '');
+    const meaningTextarea = document.getElementById(`meaning-${card.name.replace(/ /g, '_')}`);
+    const meaning = meaningTextarea ? meaningTextarea.value : 'Meaning not found.';
+    readingText += `\n- ${cardName}:\n${meaning}\n`;
+  });
+
+  readingText += `\n\nInterpretation:\n${interpretationTextarea.value}`;
+
   const blob = new Blob([readingText], { type: 'text/plain' });
 
   // Check if the download link element was found
@@ -519,5 +575,5 @@ async function getInterpretation(cards) {
 window.onload = function () {
   if (interpretationTextarea) {
     interpretationTextarea.value = '';
-  }
-};
+  };
+}
