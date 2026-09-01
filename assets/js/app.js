@@ -446,7 +446,9 @@ async function getCardMeaning(cardName, isReversed, elementId) {
   drawCardsButton.disabled = true;
 
   // **GEMINI API CALL for individual card meaning**
-  const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}?`;
+  const meaningData = typeof cardMeanings !== 'undefined' ? cardMeanings[cardName] : null;
+  const baseMeaning = meaningData ? (isReversed ? meaningData.meaning_rev : meaningData.meaning_up) : "";
+  const prompt = `What is the meaning of the ${cardName} tarot card${isReversed ? ' when reversed' : ''}? Here is some base information about the card to help you formulate a more detailed and accurate reading: ${baseMeaning}`;
   // Take the value of the constant apiKeyInput
   const apiKey = (apiKeyInput).value; // Assert type as HTMLInputElement
   const meaningTextarea = document.getElementById(elementId); // Assert type as HTMLTextAreaElement or null
@@ -503,8 +505,12 @@ async function getInterpretation(cards) {
   // **GEMINI API CALL for overall interpretation**
   const queryInput = document.getElementById('query'); // Assert type as HTMLInputElement or null
   const query = queryInput?.value || ''; // Safely access value with optional chaining, default to empty string
-  const cardNames = cards.map(c => c.name + (c.reversed ? ' (Reversed)' : '')).join(', ');
-  const prompt = `I did a tarot reading with the following cards: ${cardNames}. The query was "${query}". What is the interpretation of this reading?`;
+  const cardDetails = cards.map(c => {
+    const meaningData = typeof cardMeanings !== 'undefined' ? cardMeanings[c.name] : null;
+    const baseMeaning = meaningData ? (c.reversed ? meaningData.meaning_rev : meaningData.meaning_up) : "";
+    return `${c.name} ${c.reversed ? '(Reversed)' : ''} - Base Meaning: ${baseMeaning}`;
+  }).join('\n');
+  const prompt = `I did a tarot reading with the following cards:\n${cardDetails}\nThe query was "${query}". What is the interpretation of this reading? Please provide a detailed and insightful interpretation based on the base meanings and how they interact in the context of the query.`;
 
   const apiKey = (apiKeyInput).value; // Assert type as HTMLInputElement
 
